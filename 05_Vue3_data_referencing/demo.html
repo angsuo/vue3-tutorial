@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script type="text/javascript">
+        // original data
+        let infos = {
+            name: "J",
+            age: 18,
+            hobbies: ["video game", "learning", "Programming"]
+        }
+
+        // Vue 2's way to transfer component's data
+        //#region 
+        /* const p = {}
+        Object.defineProperty(p, "name", {
+            configurable: true,
+            get(){
+                return infos.name
+            },
+            set(value){
+                console.log("Setter called for p.name")
+                infos.name = value
+            }
+        })
+        Object.defineProperty(p, "age", {
+            configurable: true,
+            get(){
+                return infos.age
+            },
+            set(value){
+                console.log("Setter called for p.age")
+                infos.age = value
+            }
+        }) */
+        //#endregion
+        
+        // Vue 3's usage of Proxy & Reflect
+        //#region 
+        const p = new Proxy(infos, {
+            // called whenever each time reading infos' any property
+            get(obj, prop){
+                // console.log("Proxy's getter called")
+                // console.log("first param: proxied object", obj)
+                // console.log("second param: property called", prop)
+                return Reflect.get(obj, prop)
+            },
+            // called whenever editing/adding infos{}'s property
+            set(target, propName, value){
+                // console.log(`Calling setter of infos{} for ${propName} property`)
+                return Reflect.set(target, propName, value)
+            },
+            // called when deleting infos{}'s any property
+            deleteProperty(target, propName){
+                console.log(`Deleting prop ${propName} of infos{}`)
+                return Reflect.deleteProperty(target, propName)
+            }
+        })
+        //#endregion
+        
+        // Comparison of ECMA's Reflect with Object
+        //#region 
+        /* const obj = {a: 1, b: 2}
+        
+        // set a new (k, v) to obj
+        //      With Object: returns obj
+        // const result1 = Object.defineProperty(obj, "c", {
+        //     // getter
+        //     get(){
+        //         return 3
+        //     }
+        // })
+
+        //      With Reflect: returns true
+        const result1 = Reflect.defineProperty(obj, "c", {
+            // getter
+            get(){
+                return 3
+            }
+        })
+        console.log(result1)
+    
+        // re-set a (k,v) pair to obj with same propName
+        //      With Object: throw error
+        // const result2 = Object.defineProperty(obj, "c", {
+        //     get(){
+        //         return 4
+        //     }
+        // })
+        
+        //      With Reflect: returns false, obj not modified
+        const result2 = Reflect.defineProperty(obj, "c", {
+            get(){
+                return 4
+            }
+        })
+
+        console.log(result2)
+ */
+        //#endregion
+    </script>
+</body>
+</html>
